@@ -1,24 +1,50 @@
-import { useEffect } from "react"
-import useFetch from "../../hooks/useFetch"
+import { useEffect } from "react";
+import useFetch from "../../hooks/useFetch";
+import { useNavigate } from "react-router-dom";
 
+const PokeCard = ({ url }) => {
+  const [pokemon, getPokemonById] = useFetch(url);
 
-const PokeCard = ({url}) => {
+  useEffect(() => {
+    getPokemonById();
+  }, []);
 
-    const [infoApi,getApi] = useFetch(url)
+  const navigate = useNavigate();
 
-    useEffect(() =>{
-        getApi()
-    },[])
-    console.log(infoApi)
+  const handleNavigate = () => {
+    navigate(`/pokedex/${pokemon.name}`);
+  };
+
   return (
     <div>
-      <article>
+      <article onClick={handleNavigate}>
         <header>
-            <img src={infoApi?.sprites.other['official-artwork'].front_default} alt="" />
+          <img
+            src={pokemon?.sprites.other["official-artwork"].front_default}
+            alt=""
+          />
         </header>
+        <section>
+          <h3>{pokemon?.name}</h3>
+          <ul>
+            {pokemon?.types.map((typeInfo) => (
+              <li key={typeInfo.type.url}>{typeInfo.type.name}</li>
+            ))}
+          </ul>
+        </section>
+        <footer>
+          <ul>
+            {pokemon?.stats.map((statInfo) => (
+              <li key={statInfo.stat.url}>
+                <span>{statInfo.stat.name}</span>
+                <span>{statInfo.base_stat}</span>
+              </li>
+            ))}
+          </ul>
+        </footer>
       </article>
     </div>
-  )
-}
+  );
+};
 
-export default PokeCard
+export default PokeCard;
